@@ -29,7 +29,7 @@ public class Ocr extends CordovaPlugin {
         }
 
         InputImage image = InputImage.fromBitmap(bmp, 0);
-        TextRecognizer recognizer = TextRecognition.getClient();
+        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
         recognizer.process(image)
           .addOnSuccessListener(result -> cb.success(result.getText()))
