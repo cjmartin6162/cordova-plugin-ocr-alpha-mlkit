@@ -1,5 +1,7 @@
 # cordova-plugin-ocr-alpha (ML Kit)
 
+THIS IS A WORK IN PROGRESS
+
 Static-image OCR for Cordova, powered by Google ML Kit on-device text recognition (no Firebase).
 
 ## Installation
