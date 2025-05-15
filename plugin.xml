@@ -36,5 +36,6 @@
     <source-file src="src/ios/Ocr.m" />
     <header-file src="src/ios/Ocr.h" />
     <pod name="MLKitTextRecognition" />
+    <pod name="MLKitTextRecognitionCommon" />
   </platform>
 </plugin>
