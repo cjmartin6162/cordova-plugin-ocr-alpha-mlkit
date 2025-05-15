@@ -17,10 +17,19 @@
   </js-module>
 
   <!-- Android: ML Kit on-device -->
-  <platform name="android">
-    <source-file src="src/android/Ocr.java" target-dir="src/com/example/ocr" />
-    <framework src="com.google.mlkit:text-recognition:16.0.0" />
-  </platform>
+<platform name="android">
+  <!-- register the Ocr class under service name "Ocr" -->
+  <config-file target="res/xml/config.xml" parent="/*">
+    <feature name="Ocr">
+      <param name="android-package" value="com.example.ocr.Ocr" />
+    </feature>
+  </config-file>
+
+  <!-- your Java source -->
+  <source-file src="src/android/Ocr.java" target-dir="src/com/example/ocr" />
+  <framework src="com.google.mlkit:text-recognition:16.0.0" />
+</platform>
+
 
   <!-- iOS: ML Kit on-device CocoaPods -->
   <platform name="ios">
