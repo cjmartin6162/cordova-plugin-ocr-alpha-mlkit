@@ -32,11 +32,14 @@ navigator.camera.getPicture(onSuccess, onError, {
 });
 
 function onSuccess(imageURI) {
-  cordova.plugins.Ocr.scanImage(
-    imageURI,
-    text => console.log("OCR text:", text),
-    err  => console.error("OCR error:", err)
-  );
+  cordova.plugins.Ocr.scanImage(imageURI,
+  function(text) {
+    alert(text);
+  },
+  function(err) {
+  	alert(err);
+  }
+);
 }
 
 function onError(msg) {
