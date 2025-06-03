@@ -3,13 +3,13 @@ package com.example.ocr;
 import org.apache.cordova.*;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,42 +33,36 @@ public class Ocr extends CordovaPlugin {
         InputImage image = InputImage.fromBitmap(bmp, 0);
         TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
-        //recognizer.process(image)
-         // .addOnSuccessListener(result -> cb.success(result.getText()))
-         // .addOnFailureListener(e -> cb.error(e.getMessage()));
         recognizer.process(image)
-    .addOnSuccessListener(new OnSuccessListener<Text>() {
-        @Override
-        public void onSuccess(Text visionText) {
+          .addOnSuccessListener(result -> {
             try {
-                JSONArray blocksArray = new JSONArray();
+              JSONArray blocksArray = new JSONArray();
 
-                for (Text.TextBlock block : visionText.getTextBlocks()) {
-                    JSONObject blockObj = new JSONObject();
-                    JSONArray linesArray = new JSONArray();
+              for (Text.TextBlock block : result.getTextBlocks()) {
+                JSONObject blockObj = new JSONObject();
+                JSONArray linesArray = new JSONArray();
 
-                    for (Text.Line line : block.getLines()) {
-                        JSONObject lineObj = new JSONObject();
-                        lineObj.put("text", line.getText());
-                        linesArray.put(lineObj);
-                    }
-
-                    blockObj.put("lines", linesArray);
-                    blocksArray.put(blockObj);
+                for (Text.Line line : block.getLines()) {
+                  JSONObject lineObj = new JSONObject();
+                  lineObj.put("text", line.getText());
+                  linesArray.put(lineObj);
                 }
 
-                JSONObject result = new JSONObject();
-                result.put("text", visionText.getText()); // the raw full text
-                result.put("blocks", blocksArray);        // structured version
+                blockObj.put("lines", linesArray);
+                blocksArray.put(blockObj);
+              }
 
-                callbackContext.success(result);
+              JSONObject resultJson = new JSONObject();
+              resultJson.put("text", result.getText());
+              resultJson.put("blocks", blocksArray);
+
+              cb.success(resultJson);
             } catch (Exception e) {
-                callbackContext.error("Error formatting OCR result: " + e.getMessage());
+              cb.error("Formatting OCR result failed: " + e.getMessage());
             }
-        }
-    });
-
-
+          })
+          .addOnFailureListener(e -> cb.error(e.getMessage()));
+        
       } catch (Exception e) {
         cb.error(e.getMessage());
       }
@@ -77,3 +71,4 @@ public class Ocr extends CordovaPlugin {
     return true;
   }
 }
+
