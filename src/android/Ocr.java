@@ -33,9 +33,41 @@ public class Ocr extends CordovaPlugin {
         InputImage image = InputImage.fromBitmap(bmp, 0);
         TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
+        //recognizer.process(image)
+         // .addOnSuccessListener(result -> cb.success(result.getText()))
+         // .addOnFailureListener(e -> cb.error(e.getMessage()));
         recognizer.process(image)
-          .addOnSuccessListener(result -> cb.success(result.getText()))
-          .addOnFailureListener(e -> cb.error(e.getMessage()));
+    .addOnSuccessListener(new OnSuccessListener<Text>() {
+        @Override
+        public void onSuccess(Text visionText) {
+            try {
+                JSONArray blocksArray = new JSONArray();
+
+                for (Text.TextBlock block : visionText.getTextBlocks()) {
+                    JSONObject blockObj = new JSONObject();
+                    JSONArray linesArray = new JSONArray();
+
+                    for (Text.Line line : block.getLines()) {
+                        JSONObject lineObj = new JSONObject();
+                        lineObj.put("text", line.getText());
+                        linesArray.put(lineObj);
+                    }
+
+                    blockObj.put("lines", linesArray);
+                    blocksArray.put(blockObj);
+                }
+
+                JSONObject result = new JSONObject();
+                result.put("text", visionText.getText()); // the raw full text
+                result.put("blocks", blocksArray);        // structured version
+
+                callbackContext.success(result);
+            } catch (Exception e) {
+                callbackContext.error("Error formatting OCR result: " + e.getMessage());
+            }
+        }
+    });
+
 
       } catch (Exception e) {
         cb.error(e.getMessage());
