@@ -1,6 +1,7 @@
 #import "Ocr.h"
-#import <MLKitTextRecognition/MLKitTextRecognition.h>
-#import <MLKitTextRecognitionCommon/MLKitTextRecognitionCommon.h>
+   #import <MLKitVision/MLKitVision.h>
+   #import <MLKitTextRecognition/MLKitTextRecognition.h>
+   #import <MLKitTextRecognitionCommon/MLKitTextRecognitionCommon.h>
 
 @implementation Ocr
 
