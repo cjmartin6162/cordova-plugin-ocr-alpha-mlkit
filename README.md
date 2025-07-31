@@ -10,7 +10,14 @@ Static-image OCR for Cordova, powered by Google ML Kit on-device text recognitio
 cordova plugin add cordova-plugin-ocr-alpha
 cordova plugin add cordova-plugin-camera
 ```
-
+### config.xml
+	<plugin name="cordova-plugin-ocr-alpha-mlkit" spec="https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git" source="git" />
+		<config-file parent="/*" target="config.xml">
+  		<feature name="Ocr">
+    		<!-- exactly the Objective-C class name from Ocr.h -->
+    		<param name="ios-package" value="Ocr"/>
+  		</feature>
+		</config-file>
 ### Android
 
 1. Build your app normally; ML Kit artifact is included via Gradle.
