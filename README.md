@@ -18,6 +18,9 @@ cordova plugin add cordova-plugin-camera
     		<param name="ios-package" value="Ocr"/>
   		</feature>
 		</config-file>
+  	<plugin name="cordova-plugin-crop-with-ratio" spec="https://github.com/obeza/cordova-plugin-crop-with-ratio.git" source="git" />
+	<plugin name="cordova-plugin-filepath" source="npm" />
+
 ### Android
 
 1. Build your app normally; ML Kit artifact is included via Gradle.
