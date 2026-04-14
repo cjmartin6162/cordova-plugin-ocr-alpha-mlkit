@@ -1,37 +1,53 @@
-# cordova-plugin-ocr-alpha (ML Kit)
+# cordova-plugin-ocr-alpha-mlkit
 
-THIS IS A WORK IN PROGRESS
+Static-image OCR for Cordova using Google ML Kit on-device text recognition.
 
-Static-image OCR for Cordova, powered by Google ML Kit on-device text recognition (no Firebase).
+## What this plugin exposes
 
-## Installation
+```js
+cordova.plugins.Ocr.scanImage(fileUri, success, error)
+```
+
+The service name is `Ocr`, which must match the native class registration in `plugin.xml`.
+
+## Install
+
+From a Git URL:
 
 ```bash
-cordova plugin add cordova-plugin-ocr-alpha
-cordova plugin add cordova-plugin-camera
+cordova plugin add https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git
 ```
-### config.xml
-	<plugin name="cordova-plugin-ocr-alpha-mlkit" spec="https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git" source="git" />
-		<config-file parent="/*" target="config.xml">
-  		<feature name="Ocr">
-    		<!-- exactly the Objective-C class name from Ocr.h -->
-    		<param name="ios-package" value="Ocr"/>
-  		</feature>
-		</config-file>
-  	<plugin name="cordova-plugin-crop-with-ratio" spec="https://github.com/obeza/cordova-plugin-crop-with-ratio.git" source="git" />
-	<plugin name="cordova-plugin-filepath" source="npm" />
 
-### Android
+Common companion plugins used in Alpha Anywhere workflows:
 
-1. Build your app normally; ML Kit artifact is included via Gradle.
+```bash
+cordova plugin add cordova-plugin-camera
+cordova plugin add https://github.com/obeza/cordova-plugin-crop-with-ratio.git
+cordova plugin add cordova-plugin-filepath
+```
 
-### iOS
+## iOS notes
 
-1. From `platforms/ios/`, run:
-   ```bash
-   pod install
-   ```
-2. Open the `.xcworkspace` and build.
+This plugin uses CocoaPods for ML Kit. After adding the plugin, rebuild the iOS platform so Cordova regenerates the project and injects the iOS feature mapping from `plugin.xml`.
+
+```bash
+cordova platform rm ios
+cordova platform add ios
+cd platforms/ios
+pod install
+```
+
+Then open the `.xcworkspace` in Xcode, not the `.xcodeproj`.
+
+## Alpha Anywhere config.xml example
+
+```xml
+<plugin name="cordova-plugin-ocr-alpha-mlkit" spec="https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git" source="git" />
+<plugin name="cordova-plugin-crop-with-ratio" spec="https://github.com/obeza/cordova-plugin-crop-with-ratio.git" source="git" />
+<plugin name="cordova-plugin-filepath" source="npm" />
+```
+
+You do not need to manually add the iOS `<feature name="Ocr">` block in the app config when the plugin installs correctly, because the plugin now injects that mapping itself.
 
 ## Usage
 
@@ -42,18 +58,29 @@ navigator.camera.getPicture(onSuccess, onError, {
   correctOrientation: true
 });
 
-function extractFilePath(response) {
-  try {
-    if (typeof response === 'string') {
-      const parsed = JSON.parse(response);
-      return parsed.filename;
-    } else if (response.filename) {
-      return response.filename;
+function runOCR(filePath) {
+  cordova.plugins.Ocr.scanImage(
+    filePath,
+    function(result) {
+      alert(result);
+    },
+    function(err) {
+      alert("OCR error: " + err);
     }
-  } catch (e) {
-    alert("Invalid image response format: " + e.message);
-  }
-  return null;
+  );
+}
+```
+
+## Clean rebuild steps when changing the plugin
+
+```bash
+cordova plugin rm cordova-plugin-ocr-alpha-mlkit
+cordova plugin add https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git
+cordova platform rm ios
+cordova platform add ios
+cd platforms/ios
+pod install
+```
 }
 
 function onSuccess(imageData) {
