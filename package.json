@@ -1,12 +1,12 @@
 {
-  "name": "cordova-plugin-ocr-alpha",
-  "version": "1.0.1",
+  "name": "cordova-plugin-ocr-alpha-mlkit",
+  "version": "1.0.2",
   "cordova": {
-    "id": "cordova-plugin-ocr-alpha",
+    "id": "cordova-plugin-ocr-alpha-mlkit",
     "platforms": ["android", "ios"]
   },
   "description": "Static-image OCR via ML Kit on-device text recognition (no Firebase)",
-  "keywords": ["cordova","ocr","mlkit"],
+  "keywords": ["cordova", "ocr", "mlkit"],
   "license": "MIT",
-  "author": "Your Name <you@example.com>"
+  "author": "Christopher Martin"
 }
