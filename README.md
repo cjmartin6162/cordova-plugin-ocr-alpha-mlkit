@@ -1,24 +1,24 @@
 # cordova-plugin-ocr-alpha-mlkit
 
-Static-image OCR for Cordova using Google ML Kit on-device text recognition.
+Static-image OCR for Cordova using Google ML Kit on-device text recognition (Latin script).
 
-## What this plugin exposes
+## JavaScript API
 
 ```js
 cordova.plugins.Ocr.scanImage(fileUri, success, error)
 ```
 
-The service name is `Ocr`, which must match the native class registration in `plugin.xml`.
+The native service name is `Ocr`. It is registered automatically from this plugin’s `plugin.xml`; you do not need to add an iOS `<feature>` to the host app’s `config.xml`.
 
 ## Install
 
-From a Git URL:
+From Git:
 
 ```bash
 cordova plugin add https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git
 ```
 
-Common companion plugins used in Alpha Anywhere workflows:
+Common companion plugins in Alpha Anywhere workflows:
 
 ```bash
 cordova plugin add cordova-plugin-camera
@@ -26,20 +26,36 @@ cordova plugin add https://github.com/obeza/cordova-plugin-crop-with-ratio.git
 cordova plugin add cordova-plugin-filepath
 ```
 
-## iOS notes
+### Cordova CLI / platforms
 
-This plugin uses CocoaPods for ML Kit. After adding the plugin, rebuild the iOS platform so Cordova regenerates the project and injects the iOS feature mapping from `plugin.xml`.
+- Cordova CLI **12+** (matches `plugin.xml` engines).
+- **cordova-ios** **7.1.1** or **8.0.1** (and other 7.x / 8.x releases in that range).
+
+## iOS (CocoaPods)
+
+This plugin declares **`GoogleMLKit/TextRecognition`** in `plugin.xml`. Cordova merges it into the iOS `Podfile` on both cordova-ios 7.x and 8.x.
+
+After adding or upgrading the plugin, reinstall the iOS platform (or run `cordova prepare ios`), then install pods:
 
 ```bash
-cordova platform rm ios
-cordova platform add ios
+cordova prepare ios
 cd platforms/ios
 pod install
 ```
 
-Then open the `.xcworkspace` in Xcode, not the `.xcodeproj`.
+Open **`App.xcworkspace`** (or `*.xcworkspace`) in Xcode, not the `.xcodeproj`.
 
-## Alpha Anywhere config.xml example
+You do **not** need to copy an `<feature name="Ocr">` block into the application `config.xml`; the plugin injects it.
+
+### iOS requirements (this ML Kit line)
+
+| Requirement | Notes |
+|-------------|--------|
+| **Minimum iOS** | **12.0** (plugin preference + ML Kit policy). |
+| **Xcode** | **12.4+** recommended by Google for ML Kit; use a current Xcode that matches your cordova-ios and iOS SDK. |
+| **Device** | ML Kit text recognition targets **64-bit** devices. |
+
+## Alpha Anywhere `config.xml` example
 
 ```xml
 <plugin name="cordova-plugin-ocr-alpha-mlkit" spec="https://github.com/cjmartin6162/cordova-plugin-ocr-alpha-mlkit.git" source="git" />
@@ -47,9 +63,9 @@ Then open the `.xcworkspace` in Xcode, not the `.xcodeproj`.
 <plugin name="cordova-plugin-filepath" source="npm" />
 ```
 
-You do not need to manually add the iOS `<feature name="Ocr">` block in the app config when the plugin installs correctly, because the plugin now injects that mapping itself.
-
 ## Usage
+
+Success callback receives the recognized text as a **string** (plain text from `MLKText.text`).
 
 ```js
 navigator.camera.getPicture(onSuccess, onError, {
@@ -61,17 +77,17 @@ navigator.camera.getPicture(onSuccess, onError, {
 function runOCR(filePath) {
   cordova.plugins.Ocr.scanImage(
     filePath,
-    function(result) {
+    function (result) {
       alert(result);
     },
-    function(err) {
-      alert("OCR error: " + err);
+    function (err) {
+      alert('OCR error: ' + err);
     }
   );
 }
 ```
 
-## Clean rebuild steps when changing the plugin
+## Clean rebuild after plugin changes
 
 ```bash
 cordova plugin rm cordova-plugin-ocr-alpha-mlkit
@@ -80,104 +96,4 @@ cordova platform rm ios
 cordova platform add ios
 cd platforms/ios
 pod install
-```
-}
-
-function onSuccess(imageData) {
-  const imageURI = extractFilePath(imageData);
-  if (!imageURI) {
-    alert("Image capture failed or was cancelled.");
-    return;
-  }
-
-  window.plugins.crop(
-    function(croppedImageURI) {
-      if (!croppedImageURI) {
-        alert("Cropped image not found.");
-        return;
-      }
-
-      if (window.FilePath) {
-        window.FilePath.resolveNativePath(
-          croppedImageURI,
-          function(nativePath) {
-            runOCR(nativePath);
-          },
-          function(err) {
-            alert("Error resolving native path: " + err);
-          }
-        );
-      } else {
-        runOCR(croppedImageURI);
-      }
-    },
-    function(error) {
-      alert("Cropping failed: " + error);
-    },
-    imageURI,
-    {
-      quality: 100,
-      targetWidth: -1,
-      targetHeight: -1,
-      ratioX: 4,
-      ratioY: 3,
-      fixRatio: true
-    }
-  );
-}
-
-function runOCR(filePath) {
-  cordova.plugins.Ocr.scanImage(
-    filePath,
-    function(result) {
-      let parsedResult;
-      try {
-        parsedResult = (typeof result === "string") ? JSON.parse(result) : result;
-      } catch (e) {
-        if (typeof dialog !== 'undefined' && dialog.object && typeof dialog.object.setValue === 'function') {
-          alert('OCR_Text', result);
-        } else {
-          alert('OCR_Text', result);
-        }
-        return;
-      }
-
-      const s = formatRecognizedText(parsedResult);
-
-      if (typeof dialog !== 'undefined' && dialog.object && typeof dialog.object.setValue === 'function') {
-        {dialog.object}.setValue('OCR_Text', s);
-      } else {
-        {dialog.object}.setValue('OCR_Text', s);
-        //alert(s);
-      }
-    },
-    function(err) {
-      alert("OCR error: " + err);
-    }
-  );
-}
-
-function onError(msg) {
-  alert("Camera error: " + msg);
-}
-
-function formatRecognizedText(textResult) {
-  let formatted = "";
-
-  if (textResult && Array.isArray(textResult.blocks)) {
-    for (const block of textResult.blocks) {
-      if (Array.isArray(block.lines)) {
-        for (const line of block.lines) {
-          formatted += line.text + "\r\n";
-        }
-      }
-    }
-  } else if (textResult && typeof textResult.text === "string") {
-    formatted = textResult.text.replace(/\n/g, "\r\n\r\n");
-  } else {
-    formatted = "[No text recognized]";
-  }
-
-  return formatted;
-}
 ```
