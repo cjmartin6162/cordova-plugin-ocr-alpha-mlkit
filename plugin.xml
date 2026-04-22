@@ -3,18 +3,14 @@
   xmlns="http://apache.org/cordova/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <name>Cordova OCR Alpha ML Kit</name>
-  <description>Static-image OCR via ML Kit on-device text recognition</description>
+  <name>Cordova OCR Alpha MLKit</name>
+  <description>Static-image OCR via ML Kit on-device text recognition (no Firebase)</description>
   <license>MIT</license>
   <keywords>cordova,ocr,mlkit,text-recognition</keywords>
 
   <engines>
-    <engine name="cordova" version=">=12.0.0" />
-    <engine name="cordova-ios" version=">=7.1.1" />
+    <engine name="cordova" version=">=8.0.0" />
   </engines>
-
-  <!-- ML Kit Text Recognition v2 requires at least iOS 12 (see Google ML Kit release notes). -->
-  <preference name="deployment-target" value="12.0" />
 
   <js-module src="www/ocr.js" name="Ocr">
     <clobbers target="cordova.plugins.Ocr" />
@@ -31,7 +27,6 @@
   </platform>
 
   <platform name="ios">
-    <!-- Self-register the native plugin; host app config.xml does not need a manual feature. -->
     <config-file target="config.xml" parent="/*">
       <feature name="Ocr">
         <param name="ios-package" value="Ocr" />
@@ -41,7 +36,7 @@
     <header-file src="src/ios/Ocr.h" />
     <source-file src="src/ios/Ocr.m" />
 
-    <!-- Single umbrella subspec pulls consistent MLKitTextRecognition* and MLKitVision deps (CocoaPods on cordova-ios 7.1.x and 8.x). -->
     <pod name="GoogleMLKit/TextRecognition" spec="8.0.0" />
   </platform>
+
 </plugin>
