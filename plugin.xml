@@ -10,6 +10,7 @@
 
   <engines>
     <engine name="cordova" version=">=8.0.0" />
+    <engine name="cordova-ios" version=">=7.1.1" />
   </engines>
 
   <js-module src="www/ocr.js" name="Ocr">
@@ -36,7 +37,11 @@
     <header-file src="src/ios/Ocr.h" />
     <source-file src="src/ios/Ocr.m" />
 
-    <pod name="GoogleMLKit/TextRecognition" spec="8.0.0" />
+    <podspec>
+      <pods>
+        <pod name="GoogleMLKit/TextRecognition" spec="8.0.0" />
+      </pods>
+    </podspec>
   </platform>
 
 </plugin>
