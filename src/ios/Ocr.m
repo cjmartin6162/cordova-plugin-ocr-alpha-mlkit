@@ -3,6 +3,8 @@
 #import <Cordova/CDV.h>
 #import <UIKit/UIKit.h>
 #import <GoogleMLKit/TextRecognition.h>
+#import <GoogleMLKit/TextRecpgnitionCommon>
+#import <GoogleMLKit/Vision>
 
 @implementation Ocr
 
